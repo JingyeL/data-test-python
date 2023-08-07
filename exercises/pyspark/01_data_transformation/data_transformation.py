@@ -11,6 +11,22 @@ Finally, your analysis should be presented in the form of a Parquet file named o
 The challenge here is to devise the most efficient and accurate solution using PySpark to read, process, and write the data. Please also keep in mind the potential size and scale of the data while designing your solution.
 """
 
+import pyspark as ps
 
-def data_transformation():
-    pass
+
+def filter_data(df, event_type):
+    return df.filter(df.event_type == event_type)
+
+
+def add_avg_duration(df):
+    df = df.groupBy("user_id").avg("duration")
+    df = df.withColumnRenamed("avg(duration)", "avg_duration")
+    return df
+
+
+def data_transformation(df, output):
+    df = filter_data(df, "click")
+
+    df = add_avg_duration(df)
+
+    df.write.parquet(output, mode="overwrite")

@@ -10,5 +10,9 @@ The output of your work should be a JSON file, output.json.
 """
 
 
-def data_join():
-    pass
+def data_join(df_user, df_purchase, output):
+    df = df_user.join(df_purchase, "user_id")
+    df = df.groupBy("user_id", "name").sum("price")
+    df = df.withColumnRenamed("sum(price)", "total_amount")
+    df = df.drop("price")
+    df.write.json(output, mode="overwrite")

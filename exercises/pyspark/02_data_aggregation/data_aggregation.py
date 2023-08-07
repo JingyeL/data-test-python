@@ -10,6 +10,11 @@ Your report should include the following information:
 The output should be sorted in descending order based on the total number of events, and the results should be saved in a CSV file named output.csv.
 """
 
+import pyspark as ps
 
-def data_aggregation():
-    pass
+
+def data_aggregation(df, output):
+    df = df.groupBy("event_date").sum("event_count")
+    df = df.withColumnRenamed("sum(event_count)", "total_events")
+    df = df.orderBy(df.total_events.desc())
+    df.write.csv(output, mode="overwrite", header=True)
